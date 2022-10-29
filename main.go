@@ -98,7 +98,7 @@ func getCidSize(cid string) (size int, err error) {
 		return -1, err
 	}
 
-	size, err = strconv.Atoi(out.String())
+	size, err = strconv.Atoi(strings.Trim(out.String(), "\n"))
 	if err != nil {
 		fmt.Errorf("strconv: size: %w", err)
 		return -1, err
