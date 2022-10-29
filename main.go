@@ -29,9 +29,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	os.Stdout.Write(data)
+
+	str := string(data)
+	cidsstr := strings.Split(str, "\n")
 
 	sizedCids := []SizedCID{}
+
+	for _, c := range cidsstr {
+		sc := SizedCID{CID: c}
+		sizedCids = append(sizedCids, sc)
+	}
 
 	// iterate through slice calling getCidSize for each CID and
 	// storing the size alongside the CID
