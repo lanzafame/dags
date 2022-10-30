@@ -45,9 +45,10 @@ func main() {
 	for i := 0; i < len(sizedCids); i++ {
 		size, err := getCidSize(sizedCids[i].CID)
 		if err != nil {
-			fmt.Println("cid: ", sizedCids[i].CID, " error: ", err)
+			fmt.Errorf("cid: %s\terror: %s", sizedCids[i].CID, err)
 		}
 		sizedCids[i].Size = size
+		fmt.Printf("%s\t%d", sizedCids[i].CID, sizedCids[i].Size)
 	}
 
 	// create top level slice of SizedSlices that will be handed to
