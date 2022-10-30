@@ -48,7 +48,7 @@ func main() {
 			fmt.Errorf("cid: %s\terror: %s", sizedCids[i].CID, err)
 		}
 		sizedCids[i].Size = size
-		fmt.Printf("%s\t%d", sizedCids[i].CID, sizedCids[i].Size)
+		fmt.Printf("%s\t%d\n", sizedCids[i].CID, sizedCids[i].Size)
 	}
 
 	// create top level slice of SizedSlices that will be handed to
