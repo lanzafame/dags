@@ -46,6 +46,7 @@ func main() {
 		size, err := getCidSize(sizedCids[i].CID)
 		if err != nil {
 			fmt.Errorf("cid: %s\terror: %s", sizedCids[i].CID, err)
+			return
 		}
 		sizedCids[i].Size = size
 		fmt.Printf("%s\t%d\n", sizedCids[i].CID, sizedCids[i].Size)
@@ -96,6 +97,7 @@ func getCidSize(cid string) (size int, err error) {
 	}
 	err = cmd.Wait()
 	if err != nil {
+
 		return -2, err
 	}
 
