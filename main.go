@@ -63,14 +63,14 @@ LOOP:
 	ss := SizedSlice{CIDs: cids}
 
 	for i := ii; i < len(sizedCids)-1; i++ {
+		ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
+		ss.CumSize += sizedCids[i].Size
 		if ss.CumSize+sizedCids[i].Size >= dagLimit {
 			fmt.Printf("cid set added to mfs set: %+v\n", ss)
 			mfsCids = append(mfsCids, ss)
 			ii = i
 			goto LOOP
 		}
-		ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
-		ss.CumSize += sizedCids[i].Size
 	}
 
 	output := []byte{}
