@@ -56,15 +56,15 @@ func main() {
 	// ipfs files commands
 	mfsCids := []SizedSlice{}
 
-	var ss SizedSlice
+	ss = SizedSlice{CIDs: make([]string, 10)}
 	for i := 0; i < len(sizedCids)-1; i++ {
-		ss = SizedSlice{CIDs: make([]string, 10)}
 		ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
 		ss.CumSize += sizedCids[i].Size
 		if ss.CumSize+sizedCids[i].Size >= dagLimit {
 			fmt.Printf("cid set added to mfs set: %+v\n", ss)
 			mfsCids = append(mfsCids, ss)
-			ss = *new(SizedSlice)
+			ss = SizedSlice{CIDs: make([]string, 10)}
+			continue
 		}
 	}
 
