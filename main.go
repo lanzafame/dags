@@ -56,7 +56,7 @@ func main() {
 	// ipfs files commands
 	mfsCids := []SizedSlice{}
 
-	ss = SizedSlice{CIDs: make([]string, 10)}
+	ss := SizedSlice{CIDs: make([]string, 10)}
 	for i := 0; i < len(sizedCids)-1; i++ {
 		ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
 		ss.CumSize += sizedCids[i].Size
