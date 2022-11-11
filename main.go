@@ -61,7 +61,7 @@ func main() {
 		ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
 		ss.CumSize += sizedCids[i].Size
 		if ss.CumSize+sizedCids[i].Size >= dagLimit {
-			fmt.Printf("cid set added to mfs set: %+v\n", ss)
+			// fmt.Printf("cid set added to mfs set: %+v\n", ss)
 			mfsCids = append(mfsCids, ss)
 			ss = SizedSlice{}
 			continue
@@ -70,9 +70,10 @@ func main() {
 
 	if len(ss.CIDs) > 0 {
 		mfsCids = append(mfsCids, ss)
-		fmt.Printf("cid set added to mfs set: %+v\n", ss)
+		// fmt.Printf("cid set added to mfs set: %+v\n", ss)
 	}
 
+	fmt.Println(len(mfsCids))
 	for i, b := range mfsCids {
 		dirname := fmt.Sprintf("/tw-%d", i)
 		fmt.Printf("gathering %s\n", dirname)
