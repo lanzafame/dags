@@ -163,7 +163,7 @@ func gatherCIDs(cids SizedSlice, dirname string) error {
 	for _, cid := range cids.CIDs {
 		err = ipfsCopy(fmt.Sprintf("/ipfs/%s", cid), fmt.Sprintf("%s/%s", dirname, cid))
 		if err != nil {
-			fmt.Printf("copy: %v\n", err)
+			fmt.Printf("copy: cid: %s\terr:%v\n", err)
 			return err
 		}
 	}
