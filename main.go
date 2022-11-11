@@ -42,7 +42,7 @@ func main() {
 
 	// iterate through slice calling getCidSize for each CID and
 	// storing the size alongside the CID
-	for i := 0; i < len(sizedCids); i++ {
+	for i := 0; i < len(sizedCids)-1; i++ {
 		size, err := getCidSize(sizedCids[i].CID)
 		if err != nil {
 			fmt.Errorf("cid: %s\terror: %s", sizedCids[i].CID, err)
