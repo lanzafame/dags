@@ -64,6 +64,7 @@ LOOP:
 
 	for i := ii; i < len(sizedCids)-1; i++ {
 		if ss.CumSize+sizedCids[i].Size >= dagLimit {
+			fmt.Printf("cid set added to mfs set: %+v\n", ss)
 			mfsCids = append(mfsCids, ss)
 			ii = i
 			goto LOOP
