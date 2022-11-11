@@ -79,7 +79,7 @@ func main() {
 		fmt.Printf("gathering %s\n", dirname)
 		err := gatherCIDs(b, dirname)
 		if err != nil {
-			fmt.Errorf("failed to gatherCIDs: %w", err)
+			fmt.Printf("failed to gatherCIDs: %v\n", err)
 			return
 		}
 	}
@@ -100,7 +100,7 @@ func getCidSize(cid string) (size int, err error) {
 
 	size, err = strconv.Atoi(strings.TrimRight(out.String(), "\n"))
 	if err != nil {
-		fmt.Errorf("strconv: size: %w", err)
+		fmt.Printf("strconv: size: %v\n", err)
 		return -3, err
 	}
 	return size, nil
@@ -110,10 +110,12 @@ func ipfsMkdir(name string) error {
 	cmd := exec.Command("ipfs", "files", "mkdir", name)
 	err := cmd.Start()
 	if err != nil {
+		fmt.Printf("mkdir: %v\n", err)
 		return err
 	}
 	err = cmd.Wait()
 	if err != nil {
+		fmt.Printf("mkdir: %v\n", err)
 		return err
 	}
 	return nil
@@ -123,10 +125,12 @@ func ipfsCopy(src, dest string) error {
 	cmd := exec.Command("ipfs", "files", "cp", "--flush=false", src, dest)
 	err := cmd.Start()
 	if err != nil {
+		fmt.Printf("copy: %v\n", err)
 		return err
 	}
 	err = cmd.Wait()
 	if err != nil {
+		fmt.Printf("copy: %v\n", err)
 		return err
 	}
 	return nil
@@ -136,10 +140,12 @@ func ipfsFlush(dir string) error {
 	cmd := exec.Command("ipfs", "files", "flush", dir)
 	err := cmd.Start()
 	if err != nil {
+		fmt.Printf("flush: %v\n", err)
 		return err
 	}
 	err = cmd.Wait()
 	if err != nil {
+		fmt.Printf("flush: %v\n", err)
 		return err
 	}
 	return nil
@@ -149,7 +155,7 @@ func gatherCIDs(cids SizedSlice, dirname string) error {
 	// mkdir
 	err := ipfsMkdir(dirname)
 	if err != nil {
-		fmt.Errorf("mkdir: %w", err)
+		fmt.Printf("mkdir: %v\n", err)
 		return err
 	}
 
@@ -157,7 +163,7 @@ func gatherCIDs(cids SizedSlice, dirname string) error {
 	for _, cid := range cids.CIDs {
 		err = ipfsCopy(fmt.Sprintf("/ipfs/%s", cid), fmt.Sprintf("%s/%s", dirname, cid))
 		if err != nil {
-			fmt.Errorf("copy: %w", err)
+			fmt.Printf("copy: %v\n", err)
 			return err
 		}
 	}
@@ -165,7 +171,7 @@ func gatherCIDs(cids SizedSlice, dirname string) error {
 	// flush dir
 	err = ipfsFlush(dirname)
 	if err != nil {
-		fmt.Errorf("flush: %w", err)
+		fmt.Printf("flush: %v\n", err)
 		return err
 	}
 	return nil
