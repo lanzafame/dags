@@ -68,6 +68,10 @@ func main() {
 		}
 	}
 
+	if len(ss.CIDs) > 0 {
+		mfsCids = append(mfsCids, ss)
+	}
+
 	output := []byte{}
 	lines := []string{}
 	for _, b := range mfsCids {
