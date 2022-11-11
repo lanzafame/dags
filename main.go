@@ -149,6 +149,7 @@ func gatherCIDs(cids SizedSlice, dirname string) error {
 	// mkdir
 	err := ipfsMkdir(dirname)
 	if err != nil {
+		fmt.Errorf("mkdir: %w", err)
 		return err
 	}
 
@@ -156,6 +157,7 @@ func gatherCIDs(cids SizedSlice, dirname string) error {
 	for _, cid := range cids.CIDs {
 		err = ipfsCopy(fmt.Sprintf("/ipfs/%s", cid), fmt.Sprintf("%s/%s", dirname, cid))
 		if err != nil {
+			fmt.Errorf("copy: %w", err)
 			return err
 		}
 	}
@@ -163,6 +165,7 @@ func gatherCIDs(cids SizedSlice, dirname string) error {
 	// flush dir
 	err = ipfsFlush(dirname)
 	if err != nil {
+		fmt.Errorf("flush: %w", err)
 		return err
 	}
 	return nil
