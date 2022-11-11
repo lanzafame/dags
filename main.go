@@ -58,15 +58,17 @@ func main() {
 
 	cids := []string{}
 	ss := SizedSlice{CIDs: cids}
+	var ii int
 LOOP:
 
-	for _, sc := range sizedCids {
-		if ss.CumSize+sc.Size >= dagLimit {
+	for i := ii; i < len(sizedCids)-1; i++ {
+		if ss.CumSize+sizedCids[i].Size >= dagLimit {
 			mfsCids = append(mfsCids, ss)
+			ii = i
 			goto LOOP
 		}
-		ss.CIDs = append(ss.CIDs, sc.CID)
-		ss.CumSize += sc.Size
+		ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
+		ss.CumSize += sizedCids[i].Size
 	}
 
 	output := []byte{}
