@@ -56,10 +56,11 @@ func main() {
 	// ipfs files commands
 	mfsCids := []SizedSlice{}
 
-	cids := []string{}
-	ss := SizedSlice{CIDs: cids}
 	var ii int
 LOOP:
+
+	cids := []string{}
+	ss := SizedSlice{CIDs: cids}
 
 	for i := ii; i < len(sizedCids)-1; i++ {
 		if ss.CumSize+sizedCids[i].Size >= dagLimit {
