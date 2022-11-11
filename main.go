@@ -70,6 +70,7 @@ func main() {
 
 	if len(ss.CIDs) > 0 {
 		mfsCids = append(mfsCids, ss)
+		fmt.Printf("cid set added to mfs set: %+v\n", ss)
 	}
 
 	output := []byte{}
