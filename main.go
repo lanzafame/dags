@@ -73,21 +73,14 @@ func main() {
 		fmt.Printf("cid set added to mfs set: %+v\n", ss)
 	}
 
-	output := []byte{}
-	lines := []string{}
-	for _, b := range mfsCids {
-		line := strings.Join(b.CIDs, ", ")
-		lines = append(lines, line)
-	}
-	output = []byte(strings.Join(lines, "\n"))
-
-	// decide what to do with mfs slice
-	// either write it to file in a way that makes calling ipfs files cp
-	// or do the ipfs files cp calls here
-
-	err = os.WriteFile("mfs.output", output, 0666)
-	if err != nil {
-		fmt.Printf("failed to write output: %w", err)
+	for i, b := range mfsCids {
+		dirname := fmt.Sprintf("/tw-%d", i)
+		fmt.Printf("gathering %s\n", dirname)
+		err := gatherCIDs(b, dirname)
+		if err != nil {
+			fmt.Errorf("failed to gatherCIDs: %w", err)
+			return
+		}
 	}
 }
 
@@ -101,7 +94,6 @@ func getCidSize(cid string) (size int, err error) {
 	}
 	err = cmd.Wait()
 	if err != nil {
-
 		return -2, err
 	}
 
@@ -112,3 +104,120 @@ func getCidSize(cid string) (size int, err error) {
 	}
 	return size, nil
 }
+
+func ipfsMkdir(name string) error {
+	cmd := exec.Command("ipfs", "files", "mkdir", name)
+	err := cmd.Start()
+	if err != nil {
+		return err
+	}
+	err = cmd.Wait()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ipfsCopy(src, dest string) error {
+	cmd := exec.Command("ipfs", "files", "cp", "--flush=false", src, dest)
+	err := cmd.Start()
+	if err != nil {
+		return err
+	}
+	err = cmd.Wait()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ipfsFlush(dir string) error {
+	cmd := exec.Command("ipfs", "files", "flush", dir)
+	err := cmd.Start()
+	if err != nil {
+		return err
+	}
+	err = cmd.Wait()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func gatherCIDs(cids SizedSlice, dirname string) error {
+	// mkdir
+	err := ipfsMkdir(dirname)
+	if err != nil {
+		return err
+	}
+
+	// copy cids to dir
+	for _, cid := range cids.CIDs {
+		err = ipfsCopy(fmt.Sprintf("/ipfs/%s", cid), fmt.Sprintf("%s/%s", dirname, cid))
+		if err != nil {
+			return err
+		}
+	}
+
+	// flush dir
+	err = ipfsFlush(dirname)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// function internalloop
+// 	set m $argv[1]
+// 	for i in (seq 1 3907)
+// 	    set pins (tail -n +(math (echo $i)"*256") ~/upload.pins.(echo $m)m | head -n 256)
+
+// 	    set dir /(echo $m)-(echo $i)-256
+// 	    ipfs files mkdir $dir
+
+// 	    echo $dir
+
+// 	    echo "copying pins to mfs dir: $dir"
+// 	    set start (date +%s)
+// 	    for p in $pins
+// 		 ipfs files cp --flush=false /ipfs/$p $dir/$p
+// 	    end
+// 	    set finish (date +%s)
+// 	    set cmd_dur_secs (math $finish - $start)
+// 	    echo "ipfs mfs copy op took $cmd_dur_secs"
+
+// 	    echo "flushing $dir"
+// 	    time ipfs files flush $dir
+// 	end
+// end
+
+// function gather-cids-into-mfs
+//     argparse h/help -- $argv
+//     or return
+
+//     if set -q _flag_help
+//         echo "gather-cids-into-mfs [-h|--help] <start> <finish> [ARGUMENT ...]"
+// 	echo "start -- start of range to process (millions)"
+// 	echo "finish -- finish of range to process (millions)"
+// 	echo
+// 	echo "gather-cids-into-mfs 1 4"
+// 	echo
+// 	echo "the above command will process from the first million to the 4th million"
+//         return 0
+//     end
+
+//     for m in (seq $argv[1] $argv[2])
+// 	set exportdir (echo $m)m
+// 	mkdir -p $exportdir
+
+// 	set start (date +%s)
+// 	internalloop $m
+// 	set finish (date +%s)
+// 	set cmd_dur_secs (math $finish - $start)
+// 	set cmd_dur_mins (math $cmd_dur_secs / 60)
+// 	set cmd_dur_hrs (math $cmd_dur_mins / 60)
+// 	echo "entire mfs operation for $m took $cmd_dur_secs seconds/$cmd_dur_mins minutes/$cmd_dur_hrs hours"
+//     end
+// end
+
+// gather-cids-into-mfs $argv
