@@ -58,13 +58,13 @@ func main() {
 
 	ss := SizedSlice{}
 	for i := 0; i < len(sizedCids)-1; i++ {
-		ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
-		ss.CumSize += sizedCids[i].Size
-		if ss.CumSize+sizedCids[i].Size >= dagLimit {
+		if ss.CumSize+sizedCids[i].Size < dagLimit {
+			ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
+			ss.CumSize += sizedCids[i].Size
+		} else {
 			// fmt.Printf("cid set added to mfs set: %+v\n", ss)
 			mfsCids = append(mfsCids, ss)
 			ss = SizedSlice{}
-			continue
 		}
 	}
 
