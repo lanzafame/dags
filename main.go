@@ -52,13 +52,35 @@ func main() {
 		fmt.Printf("%s\t%d\n", sizedCids[i].CID, sizedCids[i].Size)
 	}
 
+	// create file to store individual CIDs that are greater than dagLimit
+	f, err := os.OpenFile("toobig.cids", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer f.Close()
+
 	// create top level slice of SizedSlices that will be handed to
 	// ipfs files commands
 	mfsCids := []SizedSlice{}
 
 	ss := SizedSlice{}
 	for i := 0; i < len(sizedCids)-1; i++ {
+		// this skips files larger then the daglimit and does nothing with them....
 		if ss.CumSize+sizedCids[i].Size < dagLimit {
+			ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
+			ss.CumSize += sizedCids[i].Size
+		} else if sizedCids[i].Size > dagLimit {
+			// output cid to file for later processing
+			if _, err := f.WriteString(fmt.Sprintf("%s\n", sizedCids[i].CID)); err != nil {
+				log.Println(err)
+				log.Println("failed to write the following CID to toobig.cids:\n")
+				log.Println(sizedCids[i].CID)
+			}
+		} else if ss.CumSize+sizedCids[i].Size >= dagLimit && sizedCids[i].Size < dagLimit {
+			// start new SizedSlice and put cid there
+			mfsCids = append(mfsCids, ss)
+			ss = SizedSlice{}
 			ss.CIDs = append(ss.CIDs, sizedCids[i].CID)
 			ss.CumSize += sizedCids[i].Size
 		} else {
